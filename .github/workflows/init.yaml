@@ -1,12 +1,31 @@
 # This is a placeholder so actions won't default to a getting started page
 
-name: Placeholder
+name: Test AWS Openid connection
 
 on: push
-
+env:
+  BUCKET_NAME : "githubopenidbucket"
+  AWS_REGION : "ap-southeast-2"
+  
 jobs:
   init:
     runs-on: ubuntu-latest
     steps:
       - name: Run a one-line script
         run: echo Hello, world!
+
+  S3PackageUpload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::435806136393:role/provider-github-openid
+          role-session-name: samplerolesession
+          aws-region: ${{ env.AWS_REGION }}
+      # Upload a file to AWS s3
+      - name:  Copy index.html to s3
+        run: |
+          aws s3 cp . s3://${{ env.BUCKET_NAME }}/
