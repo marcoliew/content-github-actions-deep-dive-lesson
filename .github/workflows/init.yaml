@@ -29,10 +29,18 @@ jobs:
           role-to-assume: arn:aws:iam::435806136393:role/provider-github-openid
           role-session-name: samplerolesession
           aws-region: ${{ env.AWS_REGION }}
-          
+
+      - name: Create bucket in S3
+        uses: aitorres/aws-s3-create-bucket@v1.2.0
+        with:
+          bucket-name: ${{ env.BUCKET_NAME }}
+          acl: 'private'
+
+      # archive repo files    
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
+        
       # Upload a file to AWS s3
-      - name:  Copy index.html to s3
+      - name:  Copy zip file to s3
         run: |
           aws s3 cp release.zip s3://${{ env.BUCKET_NAME }}/
